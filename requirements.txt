@@ -1,0 +1,9 @@
+aiogram
+flask
+flask-sqlalchemy
+qrcode[pill]
+pillow
+python-dotenv
+pytz
+apscheduler
+gunicorn

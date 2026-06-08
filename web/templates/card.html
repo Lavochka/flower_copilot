@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ card.title }}</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #fdf2f8; color: #4a5568; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card-container { width: 90%; max-width: 500px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px; overflow: hidden; text-align: center; }
+        .media-container { width: 100%; height: 300px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .media-container img, .media-container video { width: 100%; height: 100%; object-fit: cover; }
+        .content { padding: 30px; }
+        h1 { color: #d53f8c; margin-top: 0; }
+        p { line-height: 1.6; font-size: 1.1em; }
+        .footer { font-weight: bold; margin-top: 20px; color: #702459; }
+        .reply-section { padding: 20px; border-top: 1px solid #eee; }
+        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; box-sizing: border-box; }
+        button { background: #d53f8c; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; }
+        .shop-badge { margin: 20px; font-size: 0.9em; color: #a0aec0; }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="media-container">
+            {% if card.media_type == 'photo' %}
+                <img src="/{{ card.media_path }}" alt="Background">
+            {% elif card.media_type == 'video' %}
+                <video src="/{{ card.media_path }}" controls autoplay muted loop></video>
+            {% else %}
+                <div style="background: pink; width:100%; height:100%;"></div>
+            {% endif %}
+        </div>
+        <div class="content">
+            <h1>{{ card.title }}</h1>
+            <p>{{ card.text }}</p>
+            <div class="footer">От: {{ card.sender_name }}</div>
+        </div>
+        <div class="reply-section">
+            <p>Ответить отправителю:</p>
+            <textarea id="replyText" placeholder="Спасибо за поздравление!"></textarea>
+            <button onclick="sendReply()">Отправить ответ</button>
+        </div>
+    </div>
+    <div class="shop-badge">Создано в магазине GulCard.uz</div>
+
+    <script>
+        function sendReply() {
+            const text = document.getElementById('replyText').value;
+            fetch('/card/{{ card.id }}/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'reply=' + encodeURIComponent(text)
+            }).then(r => r.json()).then(data => {
+                alert(data.message);
+                document.getElementById('replyText').value = '';
+            });
+        }
+    </script>
+</body>
+</html>
